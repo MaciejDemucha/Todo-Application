@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "tasks")
-class Task {
+public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -25,11 +25,11 @@ class Task {
         this.id = id;
     }
 
-    public String getDesc() {
+    public String getDescription() {
         return description;
     }
 
-    void setDesc(String description) {
+    void setDescription(String description) {
         this.description = description;
     }
 

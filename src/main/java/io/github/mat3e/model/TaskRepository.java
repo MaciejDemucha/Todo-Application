@@ -1,16 +1,22 @@
 package io.github.mat3e.model;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
-@RepositoryRestResource(path = "todos", collectionResourceRel = "todos")
-interface TaskRepository extends JpaRepository<Task, Integer> {
-    @Override
-    @RestResource(exported = false)     //zablokowanie usuwania zadań
-    void deleteById(Integer integer);
+import java.net.ContentHandler;
+import java.util.List;
+import java.util.Optional;
 
-    @Override
-    @RestResource(exported = false)
-    void delete(Task entity);
+public interface TaskRepository {
+    List<Task> findAll();
+
+    Page<Task> findAll(Pageable page);
+
+    //znajdowanie zadań wg. stanu ich wykonania
+    List<Task> findByDone(@Param("state")boolean done);
+
+    Optional<Task> findById(Integer id);
+
+    Task save(Task entity);
 }
