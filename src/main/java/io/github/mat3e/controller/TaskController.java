@@ -5,13 +5,12 @@ import io.github.mat3e.model.TaskRepository;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 
@@ -39,10 +38,32 @@ class TaskController {
         logger.info("Custom pageable");
         return ResponseEntity.ok(repository.findAll(page).getContent());
     }
+
+    //Pobranie pojedyńczego taska
+    @GetMapping("/tasks/{id}")
+    ResponseEntity<Task> readTask(@PathVariable("id") int id){
+        return repository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     //Mapowanie dla PUT - Valid zapewnia, że nie będzie tworzona nowa encja
     @PutMapping("/tasks/{id}")
-    ResponseEntity<?> updateTask(@RequestBody @Valid Task toUpdate){
+    ResponseEntity<?> updateTask(@PathVariable("id") int id, @RequestBody @Valid Task toUpdate){
+        if(!repository.existsById(id)){
+           return ResponseEntity.notFound().build();
+        }
+        toUpdate.setId(id);
         repository.save(toUpdate);
         return ResponseEntity.noContent().build();
+    }
+
+    //Mapowanie dla POST
+    @PostMapping("/tasks")
+    ResponseEntity<Task> addTask(@RequestBody @Valid Task toAdd){
+        Task newTask = repository.save(toAdd);
+        //if (newTask == null) return ResponseEntity.noContent().build();
+        //else return new ResponseEntity<>(newTask, HttpStatus.CREATED);
+        return ResponseEntity.created(URI.create("/" + newTask.getId())).body(newTask);
     }
 }
