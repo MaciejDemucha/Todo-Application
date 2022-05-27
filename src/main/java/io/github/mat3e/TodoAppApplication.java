@@ -13,6 +13,7 @@ public class TodoAppApplication {
 		SpringApplication.run(TodoAppApplication.class, args);
 	}
 
+	//odpowiada za walidację tasków (otrzymujemy error 400 bad request zamiast 500 internal server)
 	@Bean
 	Validator validator() {
 		return new LocalValidatorFactoryBean();
